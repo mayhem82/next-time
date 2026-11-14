@@ -6,7 +6,7 @@ The garden study works through 36 possible transfers. Use the numbered entries t
 
 The Lattice Atlas calls an examination of one surface a *mesh*. A *lattice* stacks those surfaces. The *Atlas* records what their relationships reveal.
 
-The worked garden records show all five operational stages of the Modular Audit and Yield for Humans Enforcement Mechanism, from preserving the two written lists through deciding whether a notice can be issued. They include the independent review procedure and the operating steps. [Read the garden gateway records](https://mayhem82.github.io/next-time/gateways/)
+One investigator followed the garden case through all five operational stages of the Modular Audit and Yield for Humans Enforcement Mechanism. The records explain how the investigator checked each claim against the two written lists and reached the decision about a notice. They also document the seven operating steps. [Read the garden gateway records](https://mayhem82.github.io/next-time/gateways/)
 
 ## Run locally
 
