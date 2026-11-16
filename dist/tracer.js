@@ -24,7 +24,20 @@ export function initTracer(element) {
   });
   startSelect.value = 'Puddle';
   startLabel.append(startSelect);
-  controls.append(startLabel);
+
+  const directionLabel = make('label', '', 'Look for ');
+  const directionSelect = make('select');
+  for (const [value, label] of [
+    ['departures', 'Departures · where water can go'],
+    ['arrivals', 'Arrivals · where water can come from']
+  ]) {
+    const option = make('option', '', label);
+    option.value = value;
+    directionSelect.append(option);
+  }
+  directionSelect.value = 'departures';
+  directionLabel.append(directionSelect);
+  controls.append(startLabel, directionLabel);
 
   const trail = make('ol', 'trail');
   trail.setAttribute('aria-label', 'Route so far');
@@ -33,7 +46,7 @@ export function initTracer(element) {
   state.setAttribute('aria-atomic', 'true');
   const options = make('div', 'trace-options');
   options.setAttribute('role', 'group');
-  options.setAttribute('aria-label', 'Available next transfers');
+  options.setAttribute('aria-label', 'Available transfers');
   const actions = make('div', 'trace-actions');
   const back = make('button', '', 'Back');
   const reset = make('button', '', 'Reset');
@@ -43,40 +56,68 @@ export function initTracer(element) {
   element.replaceChildren(section);
 
   const steps = [];
+  function recordStep(entry, upstream) {
+    const current = upstream ? entry.from : entry.to;
+    const previous = steps[steps.length - 1];
+    let note = '';
+    if (previous && previous.upstream !== upstream && previous.entry.id === entry.id) {
+      note = 'Retraced entry ' + entry.id + '.';
+    } else {
+      // A water loop must close along an uninterrupted run in one reading direction.
+      for (let i = steps.length - 1; i >= 0 && steps[i].upstream === upstream; i--) {
+        const startOfStep = upstream ? steps[i].entry.to : steps[i].entry.from;
+        if (startOfStep === current) {
+          note = 'Loop closed at ' + current + '.';
+          break;
+        }
+      }
+    }
+    steps.push({ entry, current, upstream, note });
+  }
+
   function render() {
-    const visited = [startSelect.value, ...steps.map(step => step.to)];
-    const current = visited[visited.length - 1];
-    const next = entries.filter(entry => entry.from === current);
-    const seen = new Set();
-    const items = visited.map((location, index) => {
-      const revisited = seen.has(location);
-      seen.add(location);
-      const item = make('li');
-      const entryNumber = index ? 'Entry ' + steps[index - 1].id + ' · ' : '';
-      item.textContent = entryNumber + location + (revisited ? ' · return' : '');
-      return item;
+    const latest = steps[steps.length - 1];
+    const current = latest ? latest.current : startSelect.value;
+    const upstream = directionSelect.value === 'arrivals';
+    const next = entries.filter(entry => (upstream ? entry.to : entry.from) === current);
+    const items = steps.map(step => {
+      const { entry } = step;
+      const transfer = 'Entry ' + entry.id + ' · ' + entry.from + ' → ' + entry.to;
+      const reading = step.upstream ? ' · read upstream to ' + entry.from : '';
+      return make('li', '', transfer + reading + (step.note ? ' · ' + step.note : ''));
     });
-    trail.replaceChildren(...items);
+    trail.replaceChildren(make('li', '', startSelect.value), ...items);
     const branches = next.map(entry => {
-      const button = make('button', 'trace-choice', 'Entry ' + entry.id + ' · ' + entry.to);
+      const label = upstream ? 'from ' + entry.from : entry.to;
+      const button = make('button', 'trace-choice', 'Entry ' + entry.id + ' · ' + label);
       button.type = 'button';
       button.addEventListener('click', () => {
-        steps.push(entry);
+        recordStep(entry, upstream);
         render();
-        (options.firstElementChild || back).focus();
+        (options.firstElementChild || directionSelect).focus();
       });
       return button;
     });
     options.replaceChildren(...branches);
-    const lastVisit = visited.slice(0, -1).lastIndexOf(current);
-    const loop = lastVisit < 0 ? '' : 'Loop closed at ' + current + '. ';
-    const remaining = next.length === 1 ? '1 listed exit.' : next.length + ' listed exits.';
-    const latest = steps[steps.length - 1];
-    const arrival = latest ? 'Entry ' + latest.id + ' reached ' + current + '. ' : 'Starting at ' + current + '. ';
-    state.textContent = arrival + loop + (next.length ? remaining : 'The current list ends here.');
-    back.disabled = reset.disabled = steps.length === 0;
+
+    let position = 'Starting at ' + current + '.';
+    if (latest) {
+      position = latest.upstream
+        ? 'Read entry ' + latest.entry.id + ' upstream to ' + current + '.'
+        : 'Entry ' + latest.entry.id + ' reached ' + current + '.';
+    }
+    let remaining;
+    if (upstream) {
+      remaining = next.length === 1 ? '1 listed arrival.' : next.length + ' listed arrivals.';
+    } else {
+      remaining = next.length === 1 ? '1 listed exit.' : next.length + ' listed exits.';
+    }
+    state.textContent = [position, latest?.note, remaining].filter(Boolean).join(' ');
+    back.disabled = steps.length === 0;
+    reset.disabled = steps.length === 0 && !upstream;
   }
 
+  directionSelect.addEventListener('change', render);
   startSelect.addEventListener('change', () => {
     steps.length = 0;
     render();
@@ -88,6 +129,7 @@ export function initTracer(element) {
   });
   reset.addEventListener('click', () => {
     steps.length = 0;
+    directionSelect.value = 'departures';
     render();
     startSelect.focus();
   });

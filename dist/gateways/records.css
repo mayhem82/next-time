@@ -1,4 +1,6 @@
 .record { max-width: 55rem; width: min(calc(100% - 3rem), 55rem); margin: 3.5rem auto 5rem; }
+.gateway-nav.record { display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; margin-top:1rem; margin-bottom:1rem; font: 500 .87rem/1.5 var(--sans); }
+.gateway-nav [aria-current="page"] { font-weight:700; text-decoration-thickness:.14em; }
 .record h1 { font-size: clamp(2.9rem, 7vw, 5.4rem); line-height: .99; letter-spacing: -.04em; margin: .45rem 0 1.35rem; overflow-wrap: break-word; }
 .record h2 { font-size: clamp(1.95rem, 4.3vw, 3.1rem); letter-spacing: -.025em; line-height: 1.12; margin: 1.8rem 0 .7rem; }
 .record h3 { font-size: clamp(1.45rem, 2.8vw, 2rem); line-height: 1.18; margin: 1.35rem 0 .4rem; }

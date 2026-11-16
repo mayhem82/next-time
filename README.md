@@ -6,7 +6,7 @@ The garden study works through 36 possible transfers. Use the numbered entries t
 
 The Lattice Atlas calls an examination of one surface a *mesh*. A *lattice* stacks those surfaces. The *Atlas* records what their relationships reveal.
 
-One investigator followed the garden case through all five operational stages of the Modular Audit and Yield for Humans Enforcement Mechanism. The records explain how the investigator checked each claim against the two written lists and reached the decision about a notice. They also document the seven operating steps. [Read the garden gateway records](https://mayhem82.github.io/next-time/gateways/)
+One investigator followed the garden case through all five operational stages of the Modular Audit and Yield for Humans Enforcement Mechanism. The third evidence snapshot preserves the earlier lists and appends two facts supplied for the case. A household was found. The original garden puddle is in the yard. Two possible arrivals and four departures give eight possible two-transfer walks through that spot. Readers can enter at any gateway and trace the evidence behind a finding. They also document the seven operating steps. [Read the garden gateway records](https://mayhem82.github.io/next-time/gateways/)
 
 ## Run locally
 
